@@ -19,7 +19,7 @@ class LUL(CogBase):
         t2 = datetime.datetime(
             year=t1.year, month=t1.month, day=t1.day,
             hour=target_time.hour, minute=target_time.minute,
-            second=target_time.second
+            second=target_time.second, tzinfo=tz.gettz("UTC+8")
         )
         delta = t2 - t1
         sleep_time = delta.total_seconds() % 86400
