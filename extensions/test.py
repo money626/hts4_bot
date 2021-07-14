@@ -9,9 +9,6 @@ from discord.utils import get
 from cores.classes import CogBase
 from discord.ext import commands
 
-with open("settings1.json", "r", encoding="utf-8") as fp:
-    data = json.load(fp)
-
 
 class Test(CogBase):
     @commands.command()
