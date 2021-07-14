@@ -23,6 +23,7 @@ class LUL(CogBase):
         )
         delta = t2 - t1
         sleep_time = delta.total_seconds() % 86400
+        print(sleep_time)
         await asyncio.sleep(sleep_time)
         self.bot.loop.create_task(callback)
         while continuous:
