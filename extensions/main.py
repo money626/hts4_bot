@@ -1,28 +1,24 @@
-import json
-
 import asyncio
 
 import discord
 from discord import (
-    RawReactionActionEvent,
     PartialEmoji,
+    RawReactionActionEvent,
 )
 from discord.ext import commands
-from discord.member import User
-from discord.message import Message
-from cores.classes import CogBase
 from discord.ext.commands import (
     Context,
 )
 from discord.ext.commands.errors import (
     CheckAnyFailure,
-    ExtensionNotFound,
-    ExtensionNotLoaded,
-    MissingRequiredArgument,
     CommandInvokeError,
     CommandNotFound,
+    MissingRequiredArgument,
     NotOwner,
 )
+from discord.member import User
+
+from cores.classes import CogBase
 
 
 class Main(CogBase):
@@ -94,12 +90,14 @@ class Main(CogBase):
     @commands.command()
     @commands.is_owner()
     async def r(self, ctx: Context):
+        """Reload main Cog"""
         self.bot.reload_extension("extensions.main")
         await ctx.send(f"main reloaded!")
 
     @commands.command()
     @commands.is_owner()
     async def load(self, ctx: Context, msg: str):
+        """Load 指定 Cog"""
         extension = f"extensions.{msg}"
         self.bot.load_extension(extension)
         await ctx.send(f"{msg} loaded!")
@@ -107,12 +105,14 @@ class Main(CogBase):
     @commands.command()
     @commands.is_owner()
     async def reload(self, ctx: Context, msg: str):
+        """Reload 指定 Cog"""
         self.bot.reload_extension(f"extensions.{msg}")
         await ctx.send(f"{msg} reloaded!")
 
     @commands.command()
     @commands.is_owner()
     async def unload(self, ctx: Context, msg: str):
+        """Unload 指定 Cog"""
         if msg == 'main':
             await ctx.send("main should never be unloaded")
         else:
@@ -122,6 +122,7 @@ class Main(CogBase):
     @commands.command()
     @commands.is_owner()
     async def list(self, ctx: Context):
+        """列出所有Cog"""
         msg = "\n".join(i[11:] for i in self.bot.extensions.keys())
         await ctx.send(f"``{msg}``")
 
