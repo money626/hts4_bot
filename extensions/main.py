@@ -76,11 +76,11 @@ class Main(CogBase):
 
     async def status(self):
         while True:
-            await self.update('a')
-            await asyncio.sleep(5)
-            await self.update('b')
-            await asyncio.sleep(5)
-            await self.update('c')
+            await self.update('幫我撐10秒')
+            await asyncio.sleep(10)
+            await self.update('Switch')
+            await asyncio.sleep(3)
+            await self.update('スターバース・トストーリム')
             await asyncio.sleep(5)
 
     async def update(self, text):

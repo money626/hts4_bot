@@ -11,9 +11,15 @@ from discord.ext.commands import Context
 
 from cores.classes import CogBase
 
+tag_dict = {
+    "<@553571704681791498>臭狗": ["侑", "又", "右", "佑", "幼", "柚"],
+    "<@399209867811880961>盤子": ["毛", ],
+    "<@552712246497640458>你的最愛": ["夸", "qua", "あくあ", ],
+    "<@553571704681791498>": ["臭狗"],
+}
+
 
 class LUL(CogBase):
-
     async def add_schedule(self, target_time: datetime.time, callback: Coroutine, continuous: bool = False):
         t1 = datetime.datetime.now(tz=tz.gettz("UTC+8"))
         t2 = datetime.datetime(
@@ -38,9 +44,11 @@ class LUL(CogBase):
             for mention in msg.mentions:
                 if mention.id in [553571704681791498]:
                     await msg.channel.send("臭狗")
-            for i in ["侑", "又", "右", "佑", "幼", "柚"]:
-                if i in msg.content:
-                    await msg.channel.send(f"<@553571704681791498>臭狗")
+
+            for v, k in tag_dict.items():
+                for i in k:
+                    if i in msg.content:
+                        await msg.channel.send(v)
             for i in ["lul", "lol", "笑死"]:
                 if i in msg.content:
                     await msg.reply(i)
