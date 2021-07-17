@@ -1,10 +1,6 @@
 import asyncio
 
 import discord
-from discord import (
-    PartialEmoji,
-    RawReactionActionEvent,
-)
 from discord.ext import commands
 from discord.ext.commands import (
     Context,
@@ -16,7 +12,6 @@ from discord.ext.commands.errors import (
     MissingRequiredArgument,
     NotOwner,
 )
-from discord.member import User
 
 from cores.classes import CogBase
 
@@ -28,26 +23,6 @@ class Main(CogBase):
     async def on_ready(self):
         print("bot is on")
         self.bot.loop.create_task(self.status())
-
-    @commands.Cog.listener()
-    async def on_member_join(self, member: User):
-        print(f"{member.id}")
-        print(f"{member} joined!")
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload: RawReactionActionEvent):
-        print(payload.message_id)
-        print(str(payload.emoji))
-        print(payload.emoji == "<:sword:720231511655186534>")
-        print(payload.emoji.name)
-
-        def print_emoji(emoji: PartialEmoji):
-            pass
-
-        print(payload.emoji)
-        for i in str(payload.emoji):
-            print(i, end='')
-        print()
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: Context, error):
