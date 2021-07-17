@@ -16,6 +16,8 @@ tag_dict = {
     "<@399209867811880961>盤子": ["毛", ],
     "<@552712246497640458>你的最愛": ["夸", "qua", "あくあ", ],
     "<@553571704681791498>": ["臭狗"],
+    "<@345563871349571584>半導體之鬼": ["昌", ],
+    "<@345563871349571584>": ["開會之鬼", ],
 }
 
 
@@ -58,7 +60,8 @@ class LUL(CogBase):
         """新增單次提醒 提醒 12:00 吃飯 aliases: ro"""
         try:
             target_time = datetime.time.fromisoformat(time)
-            await self.add_schedule(target_time, ctx.send(msg))
+            self.bot.loop.create_task(self.add_schedule(target_time, ctx.send(msg)))
+            await ctx.send(f"已新增 {time} 的提醒")
         except ValueError:
             await ctx.send("格式錯誤")
 
@@ -67,7 +70,8 @@ class LUL(CogBase):
         """新增提醒(每日) 持續提醒 20:00 風谷 aliases: remind"""
         try:
             target_time = datetime.time.fromisoformat(time)
-            await self.add_schedule(target_time, ctx.send(msg), True)
+            self.bot.loop.create_task(self.add_schedule(target_time, ctx.send(msg), True))
+            await ctx.send(f"已新增 {time} 的提醒")
         except ValueError:
             await ctx.send("格式錯誤")
 
