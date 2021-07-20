@@ -1,10 +1,9 @@
-import json
 import os
 
 from discord.ext import commands
 
 print("機器人登入中 ...")
-bot = commands.Bot(command_prefix="87")
+bot = commands.Bot(command_prefix="!")
 
 for extension in os.listdir('extensions'):
     if extension.endswith('.py'):
