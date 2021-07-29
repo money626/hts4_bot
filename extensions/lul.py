@@ -1,11 +1,6 @@
-import asyncio
 import datetime
 import os
-from typing import (
-    Coroutine,
-)
 
-from dateutil import tz
 from discord import Message
 from discord.ext import commands
 from discord.ext.commands import (
@@ -18,7 +13,7 @@ from cores.ScheduleHandler import ScheduleHandler
 
 tag_dict = {
     "<@553571704681791498>臭狗": ["侑", "右", "佑", "幼", "柚"],
-    "<@399209867811880961>盤子": ["毛", ],
+    "<@399209867811880961>盤子 https://imgur.com/Upi8VSt": ["毛", ],
     "<@552712246497640458>你的最愛": ["夸", "qua", "あくあ", ],
     "<@553571704681791498>": ["臭狗"],
     "<@345563871349571584>半導體之鬼": ["昌", ],
@@ -35,22 +30,6 @@ class HTS4(CogBase):
     @commands.Cog.listener()
     async def on_ready(self):
         self.schedule_handler.load_schedule_from_database()
-
-    async def add_schedule(self, target_time: datetime.time, callback: Coroutine, continuous: bool = False):
-        t1 = datetime.datetime.now(tz=tz.gettz("UTC+8"))
-        t2 = datetime.datetime(
-            year=t1.year, month=t1.month, day=t1.day,
-            hour=target_time.hour, minute=target_time.minute,
-            second=target_time.second, tzinfo=tz.gettz("UTC+8")
-        )
-        delta = t2 - t1
-        sleep_time = delta.total_seconds() % 86400
-        print(sleep_time)
-        await asyncio.sleep(sleep_time)
-        self.bot.loop.create_task(callback)
-        while continuous:
-            await asyncio.sleep(86400)  # one day
-            self.bot.loop.create_task(callback)
 
     @commands.Cog.listener()
     async def on_message(self, msg: Message):
