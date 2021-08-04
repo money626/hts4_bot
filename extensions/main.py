@@ -55,7 +55,7 @@ class Main(CogBase):
             await asyncio.sleep(10)
             await self.update('Switch')
             await asyncio.sleep(3)
-            await self.update('スターバース・トストーリム')
+            await self.update('スターバースト・ストーリム')
             await asyncio.sleep(5)
 
     async def update(self, text):
