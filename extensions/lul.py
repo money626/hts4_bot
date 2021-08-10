@@ -1,5 +1,6 @@
 import datetime
 import os
+from collections import defaultdict
 
 from discord import Message
 from discord.ext import commands
@@ -83,6 +84,57 @@ class HTS4(CogBase):
         """列出所有提醒 aliases: lr"""
         schedule_list = self.schedule_handler.list_schedule()
         await ctx.send(schedule_list or "目前無提醒")
+
+    @commands.command(name="欠債", aliases=["debt"])
+    async def debt_report(self, ctx: Context, mode=""):
+        """
+        統計欠債項目
+        欠債 (self)
+        可選 mode: (無), self/個人, full/詳細
+        aliases: debt
+        """
+        await ctx.message.delete()
+        all_debt_dict = defaultdict(lambda: defaultdict(list))
+        async for msg in ctx.channel.history(oldest_first=True):
+            lines = msg.content.split('\n')
+            debt_name = f"{msg.created_at.strftime('%Y-%m-%d')} {lines[0]}"
+            lines = lines[1:]
+            creditor = f"<@!{msg.author.id}>"
+            if msg.author != self.bot.user:
+                for line in lines:
+                    item = [i for i in line.split(" ") if i != '']
+                    if len(item) < 2 or not item[0].startswith("<@"):
+                        break
+                    try:
+                        debtor = f"<@!{item[0][-19:-1]}>"
+                        debt = eval(item[1])
+                        all_debt_dict[debtor][creditor].append((debt_name, debt))
+                    except (ValueError, SyntaxError):
+                        await msg.reply("格式錯誤")
+                        break
+        return_msg = []
+        for debtor, data in all_debt_dict.items():
+            if mode.lower() in ["self", "個人"] and debtor != f"<@!{ctx.author.id}>":
+                continue
+            for creditor, debt_list in data.items():
+                return_msg.append(f"{debtor} 欠 {creditor}")
+                total_debt = 0
+                for debt_name, debt in debt_list:
+                    total_debt += debt
+                    if mode.lower() in ["詳細", "full"]:
+                        return_msg.append(f"{debt_name}: {debt}元")
+                return_msg.append(f"共**{total_debt}**元")
+                return_msg.append("")
+
+        if mode.lower() in ["self", "個人"]:
+            await ctx.send("\n".join(return_msg) or f"<@!{ctx.author.id}>你沒欠錢")
+        else:
+            await ctx.send("\n".join(return_msg) or "沒人欠錢或是機器人壞掉了")
+
+    @commands.command(name="我欠多少", aliases=["owe"])
+    async def owe_how_much(self, ctx: Context):
+        """統計該使用者欠多少 aliases: owe"""
+        await self.debt_report(ctx, "self")
 
 
 def setup(bot: commands.Bot):
