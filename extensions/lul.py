@@ -72,6 +72,7 @@ class HTS4(CogBase):
 
     @commands.command(aliases=["rr"])
     async def remove_remind(self, ctx: Context, remind_id: str):
+        """移除提醒 remove_remind #remind_id aliases: rr"""
         if self.schedule_handler.remove_schedule(remind_id):
             await ctx.send("已刪除該提醒")
         else:
@@ -79,6 +80,7 @@ class HTS4(CogBase):
 
     @commands.command(aliases=["lr"])
     async def list_remind(self, ctx: Context):
+        """列出所有提醒 aliases: lr"""
         schedule_list = self.schedule_handler.list_schedule()
         await ctx.send(schedule_list or "目前無提醒")
 
