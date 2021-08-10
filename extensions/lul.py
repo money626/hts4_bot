@@ -33,7 +33,7 @@ class HTS4(CogBase):
 
     @commands.Cog.listener()
     async def on_message(self, msg: Message):
-        if msg.guild is None:
+        if msg.guild is None or msg.channel.id == 722431418986135582:
             return
         if msg.author != self.bot.user:
             for mention in msg.mentions:
@@ -44,7 +44,7 @@ class HTS4(CogBase):
                 for i in k:
                     if i in msg.content:
                         await msg.channel.send(v)
-            for i in ["lul", "lol", "笑死"]:
+            for i in ["lol", "笑死"]:
                 if i in msg.content:
                     await msg.reply(i)
 
