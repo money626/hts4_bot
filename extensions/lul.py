@@ -98,11 +98,12 @@ class HTS4(CogBase):
         async for msg in ctx.channel.history(oldest_first=True):
             lines = msg.content.split('\n')
             debt_name = f"{msg.created_at.strftime('%Y-%m-%d')} {lines[0]}"
-            lines = lines[1:]
             creditor = f"<@!{msg.author.id}>"
             if msg.author != self.bot.user:
-                for line in lines:
+                for line in lines[1:]:
                     item = [i for i in line.split(" ") if i != '']
+                    if item[0].startswith("~~"):
+                        continue
                     if len(item) < 2 or not item[0].startswith("<@"):
                         break
                     try:
@@ -112,10 +113,24 @@ class HTS4(CogBase):
                     except (ValueError, SyntaxError):
                         await msg.reply("格式錯誤")
                         break
+            else:
+                if lines[0] == "欠債紀錄":
+                    if mode in ["", "full", "詳細"]:
+                        await msg.delete()
+                elif lines[0] == "個人欠債":
+                    item = [i for i in lines[1].split(" ") if i != '']
+                    print(item)
+                    debtor_id = item[0][-19:-1]
+                    print(debtor_id, ctx.author.id)
+                    if mode in ["self", "個人"] and debtor_id == f"{ctx.author.id}":
+                        await msg.delete()
+                else:
+                    await msg.delete()
         return_msg = []
         for debtor, data in all_debt_dict.items():
             if mode.lower() in ["self", "個人"] and debtor != f"<@!{ctx.author.id}>":
                 continue
+
             for creditor, debt_list in data.items():
                 return_msg.append(f"{debtor} 欠 {creditor}")
                 total_debt = 0
@@ -126,15 +141,26 @@ class HTS4(CogBase):
                 return_msg.append(f"共**{total_debt}**元")
                 return_msg.append("")
 
+        if len(return_msg):
+            if mode.lower() in ["self", "個人"]:
+                return_msg = ["個人欠債"] + return_msg
+            else:
+                return_msg = ["欠債紀錄"] + return_msg
         if mode.lower() in ["self", "個人"]:
-            await ctx.send("\n".join(return_msg) or f"<@!{ctx.author.id}>你沒欠錢")
+            await ctx.send("\n".join(return_msg) or f"個人欠債\n<@!{ctx.author.id}> 你沒欠錢")
         else:
-            await ctx.send("\n".join(return_msg) or "沒人欠錢或是機器人壞掉了")
+            await ctx.send("\n".join(return_msg) or "欠債紀錄\n沒人欠錢或是機器人壞掉了")
 
     @commands.command(name="我欠多少", aliases=["owe"])
     async def owe_how_much(self, ctx: Context):
         """統計該使用者欠多少 aliases: owe"""
         await self.debt_report(ctx, "self")
+
+    @commands.command(name="清除機器人訊息", aliases=["clear_bot_msg"])
+    async def pay_back(self, ctx: Context):
+        async for msg in ctx.channel.history():
+            if msg.author == self.bot.user:
+                await msg.delete()
 
 
 def setup(bot: commands.Bot):
