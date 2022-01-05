@@ -157,6 +157,7 @@ class HTS4(CogBase):
                 while msg_length:
                     if msg_length <= 2000:
                         await ctx.send(return_msg)
+                        break
                     else:
                         i = 1999
                         while return_msg[i] != '\n':
