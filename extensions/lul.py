@@ -149,7 +149,21 @@ class HTS4(CogBase):
         if mode.lower() in ["self", "個人"]:
             await ctx.send("\n".join(return_msg) or f"個人欠債\n<@!{ctx.author.id}> 你沒欠錢")
         else:
-            await ctx.send("\n".join(return_msg) or "欠債紀錄\n沒人欠錢或是機器人壞掉了")
+            return_msg = "\n".join(return_msg)
+            msg_length = len(return_msg)
+            if msg_length < 2000:
+                await ctx.send(return_msg or "欠債紀錄\n沒人欠錢或是機器人壞掉了")
+            else:
+                while msg_length:
+                    if msg_length <= 2000:
+                        await ctx.send(return_msg)
+                    else:
+                        i = 1999
+                        while return_msg[i] != '\n':
+                            i -= 0
+                        await ctx.send(return_msg[:i])
+                        return_msg = return_msg[i:]
+                        msg_length = len(return_msg)
 
     @commands.command(name="我欠多少", aliases=["owe"])
     async def owe_how_much(self, ctx: Context):
