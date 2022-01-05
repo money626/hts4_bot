@@ -160,7 +160,7 @@ class HTS4(CogBase):
                     else:
                         i = 1999
                         while return_msg[i] != '\n':
-                            i -= 0
+                            i -= 1
                         await ctx.send(return_msg[:i])
                         return_msg = return_msg[i:]
                         msg_length = len(return_msg)
