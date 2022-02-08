@@ -29,10 +29,10 @@ class Test(CogBase):
         for channel in self.bot.get_all_channels():
             print(channel.permissions_for(bot_user).is_superset(Permissions(8)))
 
-    @commands.command()
+    @commands.command(name='clear_message', aliases=['cm'])
     @commands.bot_has_permissions(manage_messages=True)
     @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx: Context, amount=5):
+    async def _clear(self, ctx: Context, amount=5):
         """刪除舊訊息 clear <amount of message>"""
         await ctx.channel.purge(limit=amount)
 

@@ -31,7 +31,7 @@ class ScheduleHandler:
         )
         delta = t2 - t1
         sleep_time = delta.total_seconds() % 86400
-        print(sleep_time)
+        # print(sleep_time)
         await asyncio.sleep(sleep_time)
         await callback
 

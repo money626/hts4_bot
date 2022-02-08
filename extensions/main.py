@@ -1,14 +1,18 @@
 import asyncio
+import traceback
 
 import discord
+from discord import Forbidden
 from discord.ext import commands
 from discord.ext.commands import (
     Context,
 )
 from discord.ext.commands.errors import (
+    BotMissingPermissions,
     CheckAnyFailure,
     CommandInvokeError,
     CommandNotFound,
+    MissingPermissions,
     MissingRequiredArgument,
     NotOwner,
 )
@@ -25,8 +29,13 @@ class Main(CogBase):
         self.bot.loop.create_task(self.status())
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: Context, error):
+    async def on_command_error(self, ctx: Context, error: Exception):
         print(error)
+        try:
+            raise error
+        except Exception as e:
+            print(str(e))
+            print(traceback.format_exc())
         print(type(error))
 
         if isinstance(error, CommandNotFound):
@@ -48,6 +57,16 @@ class Main(CogBase):
             await ctx.send("你沒有權限執行這項指令")
         elif isinstance(error, NotOwner):
             await ctx.send("只有機器人擁有者可以使用這個指令")
+        elif isinstance(error, MissingPermissions):
+            await ctx.send((
+                "你沒有使用這個指令的權限"
+                "缺少以下權限："
+                " ".join(error.missing_perms)
+            ))
+        elif isinstance(error, BotMissingPermissions):
+            await ctx.send("機器人缺少權限")
+        elif isinstance(error, Forbidden):
+            await ctx.send("缺少權限")
 
     async def status(self):
         while True:
