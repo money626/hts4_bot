@@ -55,7 +55,7 @@ default_settings = {
 
 class Settings(object):
     def __init__(self, guild: Guild, data: Optional[SettingsData] = None):
-        self.guild = guild
+        self.guild: Guild = guild
         self.config: SettingsData = data or SettingsData(guild_id=guild.id, **default_settings)
 
     async def update_setting(self, setting: str, value: str) -> NoReturn:
@@ -77,7 +77,7 @@ class Settings(object):
         embed = discord.Embed(
             title="Settings", description=self.guild.name, color=config.EMBED_COLOR)
 
-        embed.set_thumbnail(url=self.guild.icon_url)
+        embed.set_thumbnail(url=self.guild.icon.url)
         embed.set_footer(text=f"Usage: {config.BOT_PREFIX}set setting_name value")
 
         exclusion_keys: List[SettingsFields] = ['guild_id']

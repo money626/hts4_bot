@@ -10,11 +10,24 @@ from typing import (
 )
 from uuid import uuid4
 
-import psycopg2
 from dateutil import tz
 from discord.ext.commands import Bot
 
+from cores.classes import DatabaseHandlerBase
+
 Schedule = Tuple[str, int, time, str, bool]
+
+
+def get_sleep_time(target_time: datetime.time) -> float:
+    t1 = datetime.datetime.now(tz=tz.gettz("UTC+8"))
+    t2 = datetime.datetime(
+        year=t1.year, month=t1.month, day=t1.day,
+        hour=target_time.hour, minute=target_time.minute,
+        second=target_time.second, tzinfo=tz.gettz("UTC+8")
+    )
+    delta = t2 - t1
+    sleep_time = delta.total_seconds() % 86400
+    return sleep_time
 
 
 class ScheduleHandler:
@@ -23,14 +36,7 @@ class ScheduleHandler:
         self.schedule_db_handler = ScheduleDatabaseHandler(dsn)
 
     async def _run_schedule(self, target_time: datetime.time, callback: Coroutine, repeat: bool = False):
-        t1 = datetime.datetime.now(tz=tz.gettz("UTC+8"))
-        t2 = datetime.datetime(
-            year=t1.year, month=t1.month, day=t1.day,
-            hour=target_time.hour, minute=target_time.minute,
-            second=target_time.second, tzinfo=tz.gettz("UTC+8")
-        )
-        delta = t2 - t1
-        sleep_time = delta.total_seconds() % 86400
+        sleep_time = get_sleep_time(target_time)
         # print(sleep_time)
         await asyncio.sleep(sleep_time)
         await callback
@@ -85,38 +91,19 @@ class ScheduleHandler:
             )
 
 
-class ScheduleDatabaseHandler:
+class ScheduleDatabaseHandler(DatabaseHandlerBase):
+    _table_name = "schedules"
+    _create_table_sql = """
+        CREATE TABLE schedules (
+            id uuid PRIMARY KEY, 
+            channel_id bigint not null , 
+            target_time time not null , 
+            msg varchar not null ,
+            repeat bool not null );
+    """
+
     def __init__(self, dsn: Any):
-        self.conn = psycopg2.connect(dsn)
-        if not self.__database_table_exists():
-            self.__create_database_table()
-
-    def __database_table_exists(self):
-        with self.conn as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    SELECT tablename
-                    FROM pg_catalog.pg_tables
-                    WHERE schemaname != 'pg_catalog' AND
-                          schemaname != 'information_schema';
-                """)
-                for data in cur:
-                    if data[0] == 'schedules':
-                        return True
-                else:
-                    return False
-
-    def __create_database_table(self):
-        with self.conn as conn:
-            with conn.cursor() as cur:
-                cur.execute("""
-                CREATE TABLE schedules (
-                    id uuid PRIMARY KEY, 
-                    channel_id bigint not null , 
-                    target_time time not null , 
-                    msg varchar not null ,
-                    repeat bool not null );
-                """)
+        super(ScheduleDatabaseHandler, self).__init__(dsn)
 
     def create_schedule(self, channel_id: int, target_time: time, msg: str, repeat: bool) -> Optional[str]:
         """

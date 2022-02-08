@@ -61,7 +61,7 @@ class Main(CogBase):
             await ctx.send((
                 "你沒有使用這個指令的權限"
                 "缺少以下權限："
-                " ".join(error.missing_perms)
+                " ".join(error.missing_permissions)
             ))
         elif isinstance(error, BotMissingPermissions):
             await ctx.send("機器人缺少權限")

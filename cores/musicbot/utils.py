@@ -10,7 +10,6 @@ from typing import (
 import yt_dlp
 from discord import (
     Guild,
-    VoiceChannel,
     VoiceProtocol,
     VoiceState,
 )
@@ -55,7 +54,7 @@ async def playable(ctx: Context, guild: Guild, settings: Settings) -> bool:
         if v is None:
             await ctx.send(config.NOT_CONNECTED_MESSAGE)
             return False
-        bot_voice_channel: VoiceChannel = guild.voice_client.channel
+        bot_voice_channel = guild.voice_client.channel
         if author_voice is None:
             await ctx.send(config.USER_NOT_IN_VC_MESSAGE)
             return False

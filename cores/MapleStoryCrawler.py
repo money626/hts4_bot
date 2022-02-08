@@ -18,7 +18,7 @@ class MapleStoryEventCrawler:
         self.s.close()
 
     async def init_csrf(self):
-        req = await self.s.get('https://maplestory.beanfun.com/main?section=mBulletin')
+        req = await self.s.get("https://maplestory.beanfun.com/main?section=mBulletin")
         soup = BeautifulSoup(await req.text(), 'lxml')
         csrf = soup.find('input').get('value')
         self.s.headers.update({
@@ -29,7 +29,7 @@ class MapleStoryEventCrawler:
     async def get_event_list(self, page: int = 1) -> list:
         if self.s.headers.get('x-csrf-token') is None:
             await self.init_csrf()
-        url = 'https://maplestory.beanfun.com/main?handler=BulletinProxy'
+        url = "https://maplestory.beanfun.com/main?handler=BulletinProxy"
         data = {
             'Kind': 72,  # 活動
             'Page': page,
@@ -43,14 +43,14 @@ class MapleStoryEventCrawler:
     async def get_event_data(self, bullentin_id: int) -> dict:
         if self.s.headers.get('x-csrf-token') is None:
             await self.init_csrf()
-        url = 'https://maplestory.beanfun.com/bulletin?handler=BulletinDetail'
+        url = "https://maplestory.beanfun.com/bulletin?handler=BulletinDetail"
         async with self.s.post(url, data={'Bid': bullentin_id}) as req:
             res = await req.json()
             return res['data']['myDataSet']['table']
 
 
 class MapleStoryDatabaseHandler(DatabaseHandlerBase):
-    _table_name = 'maple_story_event'
+    _table_name = "maple_story_event"
     _create_table_sql = """
             CREATE TABLE maple_story_event (
                 id serial PRIMARY KEY , 

@@ -2,7 +2,11 @@ import asyncio
 
 import discord
 import yt_dlp
-from discord import Guild
+from discord import (
+    Guild,
+    PCMVolumeTransformer,
+    VoiceClient,
+)
 from discord.ext.commands import (
     Context,
 )
@@ -17,7 +21,7 @@ from cores.musicbot.settings import Settings
 from cores.musicbot.songInfo import Song
 
 
-class AudioController():
+class AudioController(object):
     """ Controls the playback of audio and the sequential playing of the songs.
 
             Attributes:
@@ -43,7 +47,10 @@ class AudioController():
     @volume.setter
     def volume(self, value):
         self._volume = value
-        self.guild.voice_client.source.volume = float(value) / 100.0
+        voice_client = self.guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        voice_client.source = PCMVolumeTransformer(voice_client.source, float(value) / 100.0)
 
     def track_history(self):
         history_string = config.INFO_HISTORY_TITLE
@@ -81,7 +88,11 @@ class AudioController():
 
         self.playlist.play_history.append(self.current_song)
         await ctx.send(embed=song.info.format_output(config.SONGINFO_NOW_PLAYING))
-        self.guild.voice_client.play(
+
+        voice_client = self.guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        voice_client.play(
             discord.FFmpegPCMAudio(
                 song.base_url,
                 before_options='-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'
@@ -191,14 +202,17 @@ class AudioController():
 
     async def stop_player(self):
         """Stops the player and removes all songs from the queue"""
-        if self.guild.voice_client is None or (
-                not self.guild.voice_client.is_paused() and not self.guild.voice_client.is_playing()):
+
+        voice_client = self.guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        if not voice_client.is_paused() and not voice_client.is_playing():
             return
 
         self.playlist.loop = False
         self.playlist.next(self.current_song)
         self.clear_queue()
-        self.guild.voice_client.stop()
+        voice_client.stop()
 
     async def prev_song(self, ctx: Context):
         """Loads the last song from the history into the queue and starts it"""
@@ -211,16 +225,22 @@ class AudioController():
 
         prev_song = self.playlist.prev(self.current_song)
 
-        if not self.guild.voice_client.is_playing() and not self.guild.voice_client.is_paused():
+        voice_client = self.guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        if not voice_client.is_playing() and not voice_client.is_paused():
             if prev_song == "Dummy":
                 self.playlist.next(self.current_song)
                 return None
             await self.play_song(prev_song, ctx)
         else:
-            self.guild.voice_client.stop()
+            voice_client.stop()
 
     async def timeout_handler(self):
-        if len(self.guild.voice_client.channel.voice_states) == 1:
+        voice_client = self.guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        if len(voice_client.channel.voice_states) == 1:
             await self.disconnect()
             return
 
@@ -230,7 +250,7 @@ class AudioController():
             self.timer = utils.Timer(self.timeout_handler)  # restart timer
             return
 
-        if self.guild.voice_client.is_playing():
+        if voice_client.is_playing():
             self.timer = utils.Timer(self.timeout_handler)  # restart timer
             return
 

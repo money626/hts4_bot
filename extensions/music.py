@@ -3,6 +3,7 @@ import os
 from typing import Dict
 
 import discord
+from discord import VoiceClient
 from discord.ext import commands
 from discord.ext.commands import (
     Bot,
@@ -83,7 +84,11 @@ class Music(CogBase):
         if not await utils.playable(ctx, current_guild, audio_controller.sett):
             return
 
-        if len(audio_controller.playlist.play_deque) < 1 and not current_guild.voice_client.is_playing():
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+
+        if len(audio_controller.playlist.play_deque) < 1 and not voice_client.is_playing():
             await ctx.send("No songs in queue!")
             return
 
@@ -104,7 +109,10 @@ class Music(CogBase):
         if not await utils.playable(ctx, current_guild, audio_controller.sett):
             return
 
-        if current_guild.voice_client is None or not current_guild.voice_client.is_playing():
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        if current_guild.voice_client is None or not voice_client.is_playing():
             await ctx.send("Queue is empty :x:")
             return
 
@@ -121,12 +129,11 @@ class Music(CogBase):
         if not await utils.playable(ctx, current_guild, audio_controller.sett):
             return
 
-        if current_guild is None:
-            await ctx.send(config.NO_GUILD_MESSAGE)
-            return
-        if current_guild.voice_client is None:
-            return
-        current_guild.voice_client.pause()
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+
+        voice_client.pause()
         await ctx.send("Playback Paused :pause_button:")
 
     @commands.command(name='queue', description=config.HELP_QUEUE_LONG, help=config.HELP_QUEUE_SHORT,
@@ -137,7 +144,10 @@ class Music(CogBase):
         if not await utils.playable(ctx, current_guild, audio_controller.sett):
             return
 
-        if current_guild.voice_client is None or not current_guild.voice_client.is_playing():
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        if current_guild.voice_client is None or not voice_client.is_playing():
             await ctx.send("Queue is empty :x:")
             return
 
@@ -147,7 +157,7 @@ class Music(CogBase):
         if config.MAX_SONG_PRELOAD > 25:
             config.MAX_SONG_PRELOAD = 25
 
-        embed = discord.Embed(title=f":scroll: Queue [{len(playlist.play_deque)}]", color=config.EMBED_COLOR, inline=False)
+        embed = discord.Embed(title=f":scroll: Queue [{len(playlist.play_deque)}]", color=config.EMBED_COLOR)
 
         for counter, song in enumerate(list(playlist.play_deque)[:config.MAX_SONG_PRELOAD], start=1):
             if song.info.title is None:
@@ -173,8 +183,10 @@ class Music(CogBase):
         current_guild = utils.get_guild(ctx)
         guild_id = current_guild.id
         audio_controller = self.guild_audio_controller[guild_id]
-        if current_guild.voice_client is None or (
-                not current_guild.voice_client.is_paused() and not current_guild.voice_client.is_playing()):
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        if not voice_client.is_paused() and not voice_client.is_playing():
             await ctx.send("Queue is empty :x:")
             return
         try:
@@ -195,11 +207,14 @@ class Music(CogBase):
         audio_controller.timer.cancel()
         audio_controller.timer = utils.Timer(audio_controller.timeout_handler)
 
-        if current_guild.voice_client is None or (
-                not current_guild.voice_client.is_paused() and not current_guild.voice_client.is_playing()):
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+
+        if not voice_client.is_paused() and not voice_client.is_playing():
             await ctx.send("Queue is empty :x:")
             return
-        current_guild.voice_client.stop()
+        voice_client.stop()
         await ctx.send("Skipped current song :fast_forward:")
 
     @commands.command(name='clear', description=config.HELP_CLEAR_LONG, help=config.HELP_CLEAR_SHORT, aliases=['cl'])
@@ -211,7 +226,10 @@ class Music(CogBase):
             return
 
         audio_controller.clear_queue()
-        current_guild.voice_client.stop()
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        voice_client.stop()
         audio_controller.playlist.loop = False
         await ctx.send("Cleared queue :no_entry_sign:")
 
@@ -236,7 +254,10 @@ class Music(CogBase):
         if not await utils.playable(ctx, current_guild, audio_controller.sett):
             return
 
-        current_guild.voice_client.resume()
+        voice_client = current_guild.voice_client
+        if not isinstance(voice_client, VoiceClient):
+            raise Exception("Should be VoiceClient")
+        voice_client.resume()
         await ctx.send("Resumed playback :arrow_forward:")
 
     @commands.command(name='songinfo', description=config.HELP_SONGINFO_LONG, help=config.HELP_SONGINFO_SHORT,
