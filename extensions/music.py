@@ -33,8 +33,6 @@ class Music(CogBase):
     @commands.Cog.listener()
     async def on_ready(self):
         for g in self.bot.guilds:
-            print(g)
-            # g: Guild
             g_settings = self.db.get_settings(g.id)
             s = Settings(g, g_settings)
             if g_settings is None:

@@ -42,11 +42,11 @@ class Leetcode(CogBase):
         self.mention_channels = {c.guild_id: c for c in self.db.get_mention_channels()}
         for guild_id, mention_channel in self.mention_channels.items():
             task = self.bot.loop.create_task(
-                self.get_newest_data_everyday(mention_channel)
+                self.get_daily_question_everyday(mention_channel)
             )
             self.tasks[guild_id] = task
 
-    async def get_newest_data_everyday(self, mention_channel: LeetCodeMentionChannel):
+    async def get_daily_question_everyday(self, mention_channel: LeetCodeMentionChannel):
         sleep_time = get_sleep_time(mention_channel.target_time)
         await asyncio.sleep(sleep_time)
         await self._daily_question(mention_channel.message_channel, mention_channel.thread_channel)
@@ -60,10 +60,10 @@ class Leetcode(CogBase):
         embed = self.crawler.get_embed_of_question(
             await self.crawler.get_question_of_today()
         )
-        message = await channel.send(embed=embed)
+        await channel.send(embed=embed)
         if thread_channel is not None:
             thread_channel: TextChannel = self.bot.get_channel(thread_channel)
-            await thread_channel.send(embed.url)
+            message = await thread_channel.send(embed.url)
             # f"{q['questionId']}. {q['title']}"
             await message.create_thread(name=embed.title)
 

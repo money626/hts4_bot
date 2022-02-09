@@ -115,8 +115,6 @@ class AudioController(object):
 
         host = linkutils.identify_url(track)
         is_playlist = linkutils.identify_playlist(track)
-        print(track)
-        print(is_playlist)
 
         if is_playlist != linkutils.PlaylistTypes.Unknown and is_playlist != linkutils.PlaylistTypes.YouTube_Music_Playlist:
             await ctx.send("Processing playlist...")

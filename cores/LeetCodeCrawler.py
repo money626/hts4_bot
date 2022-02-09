@@ -100,7 +100,6 @@ class LeetCodeQuestionCrawler:
 
     @staticmethod
     def get_embed_of_question(question: dict):
-        print(question)
         embed = Embed(
             title=f"{question['questionId']}. {question['title']}",
             url=f"https://leetcode.com/problems/{question['titleSlug']}",
