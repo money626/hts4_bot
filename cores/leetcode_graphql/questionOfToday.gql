@@ -1,0 +1,14 @@
+query questionOfToday {
+  activeDailyCodingChallengeQuestion {
+    question {
+      acRate
+      difficulty
+      questionId: questionFrontendId
+      title
+      titleSlug
+      topicTags {
+        name
+      }
+    }
+  }
+}

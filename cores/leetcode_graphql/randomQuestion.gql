@@ -1,0 +1,15 @@
+query questionOfToday($categorySlug: String, $filters: QuestionListFilterInput) {
+  randomQuestion(
+    categorySlug: $categorySlug
+    filters: $filters
+  ) {
+    acRate
+    difficulty
+    questionId: questionFrontendId
+    title
+    titleSlug
+    topicTags {
+      name
+    }
+  }
+}
