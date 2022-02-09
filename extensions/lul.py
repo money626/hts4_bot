@@ -47,10 +47,11 @@ class HTS4(CogBase):
                 if (reply := tag_reply_dict.get(mention.id)) is not None:
                     await msg.channel.send(reply)
 
-            for v, k in tag_dict.items():
-                for i in k:
-                    if i in msg.content:
-                        await msg.channel.send(v)
+            if msg.guild.id == 724617377563803738:
+                for v, k in tag_dict.items():
+                    for i in k:
+                        if i in msg.content:
+                            await msg.channel.send(v)
             for i in ["lol", "笑死"]:
                 if i in msg.content:
                     await msg.reply(i)
