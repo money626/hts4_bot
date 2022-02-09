@@ -44,7 +44,7 @@ class HTS4(CogBase):
             return
         if msg.author != self.bot.user:
             for mention in msg.mentions:
-                if reply := tag_reply_dict.get(mention.id) is not None:
+                if (reply := tag_reply_dict.get(mention.id)) is not None:
                     await msg.channel.send(reply)
 
             for v, k in tag_dict.items():
