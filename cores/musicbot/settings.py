@@ -286,7 +286,6 @@ class MusicSettingsDatabaseHandler(DatabaseHandlerBase):
             s = cur.fetchone()
             if s is None:
                 return None
-            print(s)
             return SettingsData(
                 guild_id=s[0],
                 default_nickname=s[1],
