@@ -108,7 +108,6 @@ class LeetCodeQuestionCrawler:
         embed.set_thumbnail(url="https://leetcode.com/static/images/LeetCode_Sharing.png")
         embed.add_field(name="Difficulty", value=question['difficulty'], inline=False)
         embed.add_field(name="Accuracy Rate", value=f"{question['acRate']:.2f}%", inline=False)
-        embed.add_field(name="Tags", value=", ".join([i['name'] for i in question['topicTags']]), inline=False)
         return embed
 
 
