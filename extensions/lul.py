@@ -20,6 +20,12 @@ tag_dict = {
     "<@345563871349571584>半導體之鬼": ["昌", ],
     "<@345563871349571584>": ["開會之鬼", ],
 }
+tag_reply_dict = {
+    553571704681791498: "臭狗",
+    541558095827173376: "大佬",
+    240874171951874049: "菜雞",
+    617675891685720082: "該寫扣了",
+}
 
 
 class HTS4(CogBase):
@@ -38,8 +44,8 @@ class HTS4(CogBase):
             return
         if msg.author != self.bot.user:
             for mention in msg.mentions:
-                if mention.id in [553571704681791498]:
-                    await msg.channel.send("臭狗")
+                if reply := tag_reply_dict.get(mention.id) is not None:
+                    await msg.channel.send(reply)
 
             for v, k in tag_dict.items():
                 for i in k:

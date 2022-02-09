@@ -95,7 +95,7 @@ class Leetcode(CogBase):
         self.db.update_notification(mention_channel)
         self.mention_channels[ctx.guild.id] = mention_channel
         self.tasks[ctx.guild.id] = self.bot.loop.create_task(
-            self.get_newest_data_everyday(mention_channel)
+            self.get_daily_question_everyday(mention_channel)
         )
         await ctx.send("Mention set.")
 
