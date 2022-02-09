@@ -2,8 +2,8 @@ psycopg2==2.9.3
 python-dateutil~=2.8.2
 bs4~=0.0.1
 lxml
-py-cord
-py-cord[voice]
+py-cord[voice] @ git+https://github.com/Pycord-Development/pycord@913f3bd7b7a6df5c7a9381f8792482707404979a
+
 yt-dlp
 aiohttp~=3.7.4.post0
 asyncio~=3.4.3
