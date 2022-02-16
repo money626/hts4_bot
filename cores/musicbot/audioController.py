@@ -68,7 +68,7 @@ class AudioController(object):
             return
 
         coro = self.play_song(next_song, ctx)
-        ctx.me.loop.create_task(coro)
+        ctx.bot.loop.create_task(coro)
 
     async def play_song(self, song: Song, ctx: Context):
         """Plays a song object"""
