@@ -183,7 +183,8 @@ class AudioController(object):
 
             with yt_dlp.YoutubeDL(options) as ydl:
                 r = ydl.extract_info(url, download=False)
-
+                if 'entries' not in r:
+                    r = ydl.extract_info(r['url'], download=False)
                 for entry in r['entries']:
                     link = f"https://www.youtube.com/watch?v={entry['id']}"
 

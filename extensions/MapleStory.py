@@ -7,11 +7,13 @@ from datetime import (
 from typing import NoReturn
 
 from bs4 import BeautifulSoup
+from discord import Embed
 from discord.ext import commands
 from discord.ext.commands import (
     Bot,
 )
 
+from config import config
 from cores.classes import CogBase
 from cores.MapleStoryCrawler import (
     MapleStoryDatabaseHandler,
@@ -57,13 +59,11 @@ class MapleStory(CogBase):
                 self.db.add_found_event(bullentin_id)
                 if event_data['urlLink'] is None:
                     detail_event_data = await self.crawler.get_event_data(bullentin_id)
-                    await self.channel.send("\n".join([
-                        "<@&865201522317197362>",
-                        event_data['title'],
-                        f'網址:https://maplestory.beanfun.com/bulletin?bid={bullentin_id}',
-                        get_img_url_from_content(detail_event_data['content'])
-                    ]))
-
+                    embed = Embed(title=event_data['title'],
+                                  url=f"https://maplestory.beanfun.com/bulletin?bid={bullentin_id}",
+                                  color=config.EMBED_COLOR)
+                    embed.set_image(url=get_img_url_from_content(detail_event_data['content']))
+                    await self.channel.send("<@&865201522317197362>", embed=embed)
                 else:
                     await self.channel.send("\n".join([
                         "<@&865201522317197362>",
