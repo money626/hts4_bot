@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:13.2-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "49153:5432"
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hts5-bot
+    env_file:
+      - .env
+    links:
+      - db
+    depends_on:
+      - db
