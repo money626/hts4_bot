@@ -2,4 +2,6 @@
 *.json
 *.txt
 .env
+*.log
+**/__pycache__/
 !requirements.txt
